@@ -45,7 +45,7 @@ Service.belongsTo(Type)
 Service.hasMany(BasketService)
 BasketService.belongsTo(Service)
 
-Service.hasMany(ServiceInfo)
+Service.hasMany(ServiceInfo, {as: 'info'})
 ServiceInfo.belongsTo(Service)
 
 module.exports = {

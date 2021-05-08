@@ -1,18 +1,29 @@
 const uuid = require('uuid');
 const path = require('path');
-const {Service} = require('../models/models');
+const {Service, ServiceInfo} = require('../models/models');
 const ApiError = require('../error/ApiError');
 
 class ServiceController {
     async create(req, res, next) {
         try {
-            const {name, price, typeId, info} = req.body;
+            let {name, price, typeId, info} = req.body;
             const service = await Service.create({name, price, typeId, info});
+
+            if (info) {
+                info = JSON.parse(info);
+                info.forEach(i => 
+                    ServiceInfo.create({
+                        title: i.title,
+                        description: i.description,
+                        serviceId: service.id
+                    })    
+                );
+            }
+
             return res.json(service); 
         } catch (e) {
             next(ApiError.badRequest(e.message));
         }
-        
     }
 
     async getAll(req, res) {
@@ -23,14 +34,22 @@ class ServiceController {
         let servises;
         if (!typeId) {
             servises = await Service.findAndCountAll({limit, offset});
-        } else if (typeId) {
+        }
+        if (typeId) {
             servises = await Service.findAndCountAll({where: {typeId}, limit, offset});
         }
         return res.json(servises);
     }
 
     async getOne(req, res) {
-        
+        const {id} = req.params;
+        const service = await Service.findOne(
+            {
+                where: {id},
+                include: [{model: ServiceInfo, as: 'info'}]
+            },            
+        );
+        return res.json(service);
     }
 }
 
