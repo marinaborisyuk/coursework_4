@@ -7,5 +7,4 @@ router.post('/', checkRole('ADMIN'), serviceController.create);
 router.get('/', serviceController.getAll);
 router.get('/:id', serviceController.getOne);
 
-
 module.exports = router;

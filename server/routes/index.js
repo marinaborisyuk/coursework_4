@@ -8,5 +8,4 @@ router.use('/user', userRouter);
 router.use('/service', serviceRouter);
 router.use('/type', typeRouter);
 
-
 module.exports = router;
